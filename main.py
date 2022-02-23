@@ -31,7 +31,7 @@ def read_root():
     return {"Hello": "World"}
     
 @app.post("/transcribe-encoding")
-async def upload_file_eugene(data: bytes = File(...)):
+async def upload_file_encoding(data: bytes = File(...)):
     filename = secure_filename("test" + str(random.randrange(0,999)) + ".wav")
     fileLocation = os.path.join(os.path.dirname(__file__), filename)
     with open(fileLocation, "wb") as binary_file:
@@ -42,7 +42,7 @@ async def upload_file_eugene(data: bytes = File(...)):
     return {"result": await transcribe(convertedFile)}
     
 @app.post("/transcribe")
-async def upload_file_eugene(file: bytes = File(...)):
+async def upload_file(file: bytes = File(...)):
     filename = secure_filename("test" + str(random.randrange(0,999)) + ".wav")
     fileLocation = os.path.join(os.path.dirname(__file__), filename)
     with open(fileLocation, "wb") as binary_file:
@@ -51,7 +51,7 @@ async def upload_file_eugene(file: bytes = File(...)):
     return {"result": await transcribe(filename)}
 
 @app.post("/transcribe-Unity")
-async def upload_file_eugene2(request: Request):
+async def upload_file_Unity(request: Request):
     form = await request.form()
     filename = secure_filename("test" + str(random.randrange(0,999)) + ".wav")
     fileLocation = os.path.join(os.path.dirname(__file__), filename)
