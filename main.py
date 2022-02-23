@@ -1,4 +1,6 @@
 import os
+from typing_extensions import Self
+from aiohttp import request
 import ffmpeg
 import uuid
 import sys
@@ -9,7 +11,7 @@ from werkzeug.utils import secure_filename
 import scipy.io.wavfile as wav
 
 from typing import Optional
-from fastapi import FastAPI, File
+from fastapi import FastAPI, File, Request, Response
 
 app = FastAPI()
 
@@ -48,6 +50,16 @@ async def upload_file_eugene(file: bytes = File(...)):
         print(binary_file)
     return {"result": await transcribe(filename)}
 
+@app.post("/transcribe-Unity")
+async def upload_file_eugene2(request: Request):
+    form = await request.form()
+    filename = secure_filename("test" + str(random.randrange(0,999)) + ".wav")
+    fileLocation = os.path.join(os.path.dirname(__file__), filename)
+    with open(fileLocation, "wb") as binary_file:
+        binary_file.write(await form["file"].read())
+        print(binary_file)
+    return {"result": await transcribe(filename)}
+    
 async def transcribe(filename):
     print("Starting transcription...")
     fs, audio = wav.read(os.path.join(os.path.dirname(__file__), filename))
