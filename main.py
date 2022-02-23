@@ -27,12 +27,8 @@ else:
 @app.get("/")
 def read_root():
     return {"Hello": "World"}
-
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: Optional[str] = None):
-    return {"item_id": item_id, "q": q}
-
-@app.post("/eugene")
+    
+@app.post("/transcribe-encoding")
 async def upload_file_eugene(data: bytes = File(...)):
     filename = secure_filename("test" + str(random.randrange(0,999)) + ".wav")
     fileLocation = os.path.join(os.path.dirname(__file__), filename)
@@ -41,16 +37,25 @@ async def upload_file_eugene(data: bytes = File(...)):
         print(binary_file)
     convertedFile = normalize_file(fileLocation)
     os.remove(fileLocation)
-    return {"Hello": transcribe(convertedFile)}
+    return {"result": await transcribe(convertedFile)}
+    
+@app.post("/transcribe")
+async def upload_file_eugene(file: bytes = File(...)):
+    filename = secure_filename("test" + str(random.randrange(0,999)) + ".wav")
+    fileLocation = os.path.join(os.path.dirname(__file__), filename)
+    with open(fileLocation, "wb") as binary_file:
+        binary_file.write(file)
+        print(binary_file)
+    return {"result": await transcribe(filename)}
 
-def transcribe(filename):
+async def transcribe(filename):
     print("Starting transcription...")
     fs, audio = wav.read(os.path.join(os.path.dirname(__file__), filename))
     processed_data = ds.stt(audio)
     os.remove(os.path.join(os.path.dirname(__file__), filename))
     return processed_data
 
-    # Use ffmpeg to convert our file to WAV @ 16k
+# Use ffmpeg to convert our file to WAV @ 16k
 def normalize_file(file: str):
     filename = str(uuid.uuid4()) + ".wav"
     fileLocation = os.path.join(os.path.dirname(__file__), filename)
