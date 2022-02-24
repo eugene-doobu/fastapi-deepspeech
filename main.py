@@ -5,6 +5,7 @@ import ffmpeg
 import uuid
 import sys
 import random
+import time
 
 from deepspeech import Model
 from werkzeug.utils import secure_filename
@@ -25,6 +26,8 @@ elif os.path.isfile("/var/lib/deepspeech/models/deepspeech-0.9.3-models.pbmm"):
     ds.enableExternalScorer('/var/lib/deepspeech/models/deepspeech-0.9.3-models.scorer')
 else:
     sys.exit('No DeepSpeech Model found, please download one!')
+
+ds.setBeamWidth(10)
 
 @app.get("/")
 def read_root():
@@ -48,7 +51,6 @@ async def upload_file(file: bytes = File(...)):
     with open(fileLocation, "wb") as binary_file:
         binary_file.write(file)
         print(binary_file)
-    os.remove(fileLocation)
     return {"result": await transcribe(filename)}
 
 @app.post("/transcribe-Unity")
@@ -59,14 +61,15 @@ async def upload_file_Unity(request: Request):
     with open(fileLocation, "wb") as binary_file:
         binary_file.write(await form["file"].read())
         print(binary_file)
-    os.remove(fileLocation)
     return {"result": await transcribe(filename)}
     
 async def transcribe(filename):
     print("Starting transcription...")
+    start = time.time()
     fs, audio = wav.read(os.path.join(os.path.dirname(__file__), filename))
     processed_data = ds.stt(audio)
     os.remove(os.path.join(os.path.dirname(__file__), filename))
+    print(f"{time.time() - start:0.5f}")
     return processed_data
 
 # Use ffmpeg to convert our file to WAV @ 16k
