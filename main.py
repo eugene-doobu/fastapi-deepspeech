@@ -48,6 +48,7 @@ async def upload_file(file: bytes = File(...)):
     with open(fileLocation, "wb") as binary_file:
         binary_file.write(file)
         print(binary_file)
+    os.remove(fileLocation)
     return {"result": await transcribe(filename)}
 
 @app.post("/transcribe-Unity")
@@ -58,6 +59,7 @@ async def upload_file_Unity(request: Request):
     with open(fileLocation, "wb") as binary_file:
         binary_file.write(await form["file"].read())
         print(binary_file)
+    os.remove(fileLocation)
     return {"result": await transcribe(filename)}
     
 async def transcribe(filename):
