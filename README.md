@@ -5,19 +5,7 @@ This project works on window and ubuntu
 
 ## Dependency
 
-> pip install fastapi
-> 
-> pip install uvicorn
-> 
-> pip install ffmpeg
-> 
-> pip install ffmpeg-python
-> 
-> pip install deepspeech
-> 
-> pip install werkzeug
-> 
-> pip install scipy
+> pip install fastapi uvicorn ffmpeg ffmpeg-python deepspeech werkzeug scipy
 
 ## Installation
 
